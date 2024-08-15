@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Notes</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            height: 100vh;
+            margin: 0;
+            background-color: #f7f7f7;
+            font-family: Arial, sans-serif;
+        }
+
+        .container {
+            width: 100%;
+            max-height: 100%;
+            max-width: 70%;
+            background-color: #fff;
+            border: 1px solid #ddd;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 100px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            font-size: 24px;
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        input[type="text"] {
+            padding: 12px;
+            width: calc(100% - 104px);
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            margin-right: 4px;
+            margin-bottom: 20px;
+        }
+
+        button {
+            padding: 12px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        #notes-container {
+            margin-top: 20px;
+        }
+
+        .note {
+            background-color: #f9f9f9;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            position: relative;
+        }
+
+        .note span {
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        .note .edit-button,
+        .note .delete-button {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            padding: 6px 12px;
+            color: white;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+
+        .note .edit-button {
+            right: 90px;
+            background-color: #2196F3;
+        }
+
+        .note .edit-button:hover {
+            background-color: #1976D2;
+        }
+
+        .note .delete-button {
+            right: 10px;
+            background-color: #f44336;
+        }
+
+        .note .delete-button:hover {
+            background-color: #d32f2f;
+        }
+
+        #logout {
+            margin-top: 20px;
+            background-color: #ff5722;
+        }
+
+        #logout:hover {
+            background-color: #e64a19;
+        }
+
+        h1 {
+    text-align: center;
+    background-color: #2196F3;
+    color: white;
+    padding: 20px;
+    width: 100%;
+    box-sizing: border-box; 
+    margin: 0 auto;
+    margin-bottom: 30px;
+}
+
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Your Notes</h1>
+
+        <input type="text" id="new-note" placeholder="Add a new note">
+        <button id="add-note">Add Note</button>
+        <div id="notes-container"></div>
+        <button id="logout">Logout</button>
+    </div>
+
+    <script>
+        const notesContainer = document.getElementById('notes-container');
+        const newNoteInput = document.getElementById('new-note');
+        const addNoteButton = document.getElementById('add-note');
+        const logoutButton = document.getElementById('logout');
+
+        function loadNotes() {
+            const notes = JSON.parse(localStorage.getItem('notes')) || [];
+            notesContainer.innerHTML = '';
+            notes.forEach((note, index) => {
+                const noteElement = document.createElement('div');
+                noteElement.classList.add('note');
+                noteElement.innerHTML = `
+                    <span id="note-text-${index}">${note}</span>
+                    <button class="edit-button" onclick="editNote(${index})">Edit</button>
+                    <button class="delete-button" onclick="deleteNote(${index})">Delete</button>
+                `;
+                notesContainer.appendChild(noteElement);
+            });
+        }
+
+        addNoteButton.addEventListener('click', function() {
+            const noteText = newNoteInput.value.trim();
+            if (noteText) {
+                const notes = JSON.parse(localStorage.getItem('notes')) || [];
+                notes.push(noteText);
+                localStorage.setItem('notes', JSON.stringify(notes));
+                newNoteInput.value = '';
+                loadNotes();
+            }
+        });
+
+        function deleteNote(index) {
+            const notes = JSON.parse(localStorage.getItem('notes')) || [];
+            notes.splice(index, 1);
+            localStorage.setItem('notes', JSON.stringify(notes));
+            loadNotes();
+        }
+
+        function editNote(index) {
+            const notes = JSON.parse(localStorage.getItem('notes')) || [];
+            const noteText = prompt("Edit your note:", notes[index]);
+            if (noteText !== null && noteText.trim() !== "") {
+                notes[index] = noteText.trim();
+                localStorage.setItem('notes', JSON.stringify(notes));
+                loadNotes();
+            }
+        }
+
+        logoutButton.addEventListener('click', function() {
+            window.location.href = 'index.html';
+        });
+
+        window.onload = loadNotes;
+    </script>
+</body>
+</html>
